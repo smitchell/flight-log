@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    repositories:
+      enabled: true
+    show-sql: true
+  datasource:
+    url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+
+data:
+  load: false
+  airports_url: file:///airports.csv
+  countries_url: file:///countries.csv
+  regions_url: file:///regions.csv
