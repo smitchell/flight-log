@@ -1,14 +1,18 @@
 package com.example.aviationservice.domain;
 
 import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Data
 @Entity
+@Table(name = "AIRPORTS", indexes = {
+        @Index(name = "airport_region_index", columnList = "region"),
+        @Index(name = "airport_region_type_index", columnList = "region,type")
+})
 /**
  * https://ourairports.com/data/
  */
@@ -22,14 +26,11 @@ public class Airport implements Serializable {
     private BigDecimal latitude;
     @Column(precision = 5, scale = 2)
     private BigDecimal longitude;
+    private Geometry location;
     private Integer elevation;
     private String continent;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
-    private Country country;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id")
-    private Region region;
+    private String country;
+    private String region;
     private String municipality;
     private boolean scheduledService;
     private String gpsCode;

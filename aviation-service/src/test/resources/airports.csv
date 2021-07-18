@@ -1,2 +1,3 @@
 "id","ident","type","name","latitude_deg","longitude_deg","elevation_ft","continent","iso_country","iso_region","municipality","scheduled_service","gps_code","iata_code","local_code","home_link","wikipedia_link","keywords"
-313629,"ZZZZ","small_airport","Satsuma Iōjima Airport",30.784722,130.270556,338,"AS","JP","JP-46","Mishima","no","RJX7",,"RJX7",,"http://wikimapia.org/6705190/Satsuma-Iwo-jima-Airport","SATSUMA,IWOJIMA,RJX7"
+6760,"04FA","small_airport","Richards Field",25.558700561523400,-80.51509857177730,9,"NA","US","US-FL","Homestead","no","04FA","04FA",,,,,,
+

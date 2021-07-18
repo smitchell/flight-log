@@ -2,20 +2,20 @@ package com.example.aviationservice.init;
 
 import com.example.aviationservice.domain.Airport;
 import com.example.aviationservice.domain.AirportType;
-import com.example.aviationservice.domain.Country;
-import com.example.aviationservice.domain.Region;
 import com.example.aviationservice.repositories.AirportRepository;
-import com.example.aviationservice.repositories.CountryRepository;
-import com.example.aviationservice.repositories.RegionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * data.load = false in application.yml, allowing Junit to initialize
  * DataLoader without loading any data so that individual loaders may be tested.
  */
+@Slf4j
 @SpringBootTest
+@Sql(scripts = "classpath:/schema-h2.sql")
 public class TestLoadAirports {
     @Autowired
     ResourceLoader resourceLoader;
@@ -35,29 +37,129 @@ public class TestLoadAirports {
     @Autowired
     private AirportRepository airportRepository;
 
+    public TestLoadAirports() throws ClassNotFoundException {
+        Class.forName("org.h2gis.functions.factory.H2GISFunctions");
+    }
+
+
     @Test
     @Transactional
-    public void testLoadAirports() throws Exception {
-        dataLoader.loadRegions(resourceLoader.getResource("classpath:/regions.csv").getInputStream());
-        dataLoader.loadCountries(resourceLoader.getResource("classpath:/countries.csv").getInputStream());
+    public void testFindAirportByAreaSuccess() throws Exception {
+        dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
+        GeometryFactory geomFactory = new GeometryFactory();
+
+        Envelope env = new Envelope(
+                new Coordinate(-80.518862, 25.564534),
+                new Coordinate(-80.508013, 25.550651));
+
+        Coordinate[] coords = new Coordinate[5];
+        coords[0] = new Coordinate(env.getMinX(), env.getMinY());
+        coords[1] = new Coordinate(env.getMinX(), env.getMaxY());
+        coords[2] = new Coordinate(env.getMaxX(), env.getMaxY());
+        coords[3] = new Coordinate(env.getMaxX(), env.getMinY());
+        coords[4] = new Coordinate(env.getMinX(), env.getMinY());
+        LinearRing shell = geomFactory.createLinearRing(coords);
+        Polygon area = geomFactory.createPolygon(shell, null);
+        area.setSRID(3857);
+
+        List<Airport> airports = airportRepository.findWithinArea(area);
+        assertNotNull(airports);
+        assertEquals(1, airports.size());
+        Airport match = airports.get(0);
+        assertEquals("04FA", match.getIdent());
+    }
+
+    @Test
+    @Transactional
+    public void testFindAirportByAreaMiss() throws Exception {
+        dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
+        GeometryFactory geomFactory = new GeometryFactory();
+
+        Envelope env = new Envelope(
+                new Coordinate(-94.723415, 38.927415),
+                new Coordinate(-94.686465, 38.912943));
+
+        Coordinate[] coords = new Coordinate[5];
+        coords[0] = new Coordinate(env.getMinX(), env.getMinY());
+        coords[1] = new Coordinate(env.getMinX(), env.getMaxY());
+        coords[2] = new Coordinate(env.getMaxX(), env.getMaxY());
+        coords[3] = new Coordinate(env.getMaxX(), env.getMinY());
+        coords[4] = new Coordinate(env.getMinX(), env.getMinY());
+        LinearRing shell = geomFactory.createLinearRing(coords);
+        Polygon area = geomFactory.createPolygon(shell, null);
+        area.setSRID(3857);
+
+        List<Airport> airports = airportRepository.findWithinArea(area);
+        assertNotNull(airports);
+        assertEquals(0, airports.size());
+    }
+
+    @Test
+    @Transactional
+    public void testFindAirportByRegionSuccess() throws Exception {
+        dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
+        List<Airport> airportList = airportRepository.findAllByRegionOrderByNameAsc("US-FL");
+        assertNotNull(airportList);
+        assertEquals(1, airportList.size());
+        assertEquals("04FA", airportList.get(0).getIdent());
+    }
+
+    @Test
+    @Transactional
+    public void testFindAirportByRegionMiss() throws Exception {
+        dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
+        List<Airport> airportList = airportRepository.findAllByRegionOrderByNameAsc("US-KS");
+        assertNotNull(airportList);
+        assertEquals(0, airportList.size());
+    }
+
+    @Test
+    @Transactional
+    public void testFindAirportByRegionAndTypeSuccess() throws Exception {
+        dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
+        List<AirportType> types = new ArrayList<>();
+        types.add(AirportType.small_airport);
+        types.add(AirportType.medium_airport);
+        types.add(AirportType.large_airport);
+        List<Airport> airportList = airportRepository.findAllByRegionAndTypeInOrderByNameAsc("US-FL", types);
+        assertNotNull(airportList);
+        assertEquals(1, airportList.size());
+        assertEquals("04FA", airportList.get(0).getIdent());
+    }
+
+    @Test
+    @Transactional
+    public void testFindAirportByRegionAndTypeMiss() throws Exception {
+        dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
+        List<AirportType> types = new ArrayList<>();
+        types.add(AirportType.balloonport);
+        types.add(AirportType.closed);
+        types.add(AirportType.heliport);
+        types.add(AirportType.seaplane_base);
+        List<Airport> airportList = airportRepository.findAllByRegionAndTypeInOrderByNameAsc("US-FL", types);
+        assertNotNull(airportList);
+        assertEquals(0, airportList.size());
+    }
+
+    @Test
+    @Transactional
+    public void testLoadAndFindAirports() throws Exception {
         dataLoader.loadAirports(resourceLoader.getResource("classpath:/airports.csv").getInputStream());
 
-        Optional<Airport> optionalAirport = airportRepository.findById(313629);
+        Optional<Airport> optionalAirport = airportRepository.findById(6760);
         assertTrue(optionalAirport.isPresent());
         Airport airport = optionalAirport.get();
-        assertEquals("ZZZZ", airport.getIdent());
+        assertEquals("04FA", airport.getIdent());
         assertEquals(AirportType.small_airport, airport.getType());
-        assertEquals("Satsuma Iōjima Airport", airport.getName());
-        assertEquals("AS", airport.getContinent());
-        assertEquals("JP", airport.getCountry().getCode());
-        assertEquals("JP-46", airport.getRegion().getCode());
-        assertFalse( airport.isScheduledService());
-        assertEquals("RJX7", airport.getGpsCode());
-        assertEquals("http://wikimapia.org/6705190/Satsuma-Iwo-jima-Airport", airport.getWikipediaLink());
-        assertEquals("SATSUMA,IWOJIMA,RJX7", airport.getKeywords());
+        assertEquals("Richards Field", airport.getName());
+        assertEquals("NA", airport.getContinent());
+        assertEquals("US", airport.getCountry());
+        assertEquals("US-FL", airport.getRegion());
+        assertFalse(airport.isScheduledService());
+        assertEquals("04FA", airport.getGpsCode());
 
-        assertEquals(BigDecimal.valueOf(30.784722D).setScale(5, RoundingMode.HALF_UP), airport.getLatitude());
-        assertEquals(BigDecimal.valueOf(130.270556).setScale(5, RoundingMode.HALF_UP), airport.getLongitude());
-
+        assertEquals(BigDecimal.valueOf(25.558700561523400).setScale(5, RoundingMode.HALF_UP), airport.getLatitude());
+        assertEquals(BigDecimal.valueOf(-80.51509857177730).setScale(5, RoundingMode.HALF_UP), airport.getLongitude());
+        assertNotNull(airport.getLocation());
     }
 }

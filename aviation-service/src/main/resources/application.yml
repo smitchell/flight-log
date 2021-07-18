@@ -12,6 +12,7 @@ spring:
       hibernate:
         dialect: org.hibernate.spatial.dialect.mysql.MySQL8SpatialDialect
         globally_quoted_identifiers: true
+    generate-ddl: true
   datasource:
     url: jdbc:mysql://atlas.byteworksinc.com:3306/aviation
     username: smitchell
@@ -21,5 +22,3 @@ spring:
 data:
   load: true
   airports_url: https://ourairports.com/data/airports.csv
-  countries_url: https://ourairports.com/data/countries.csv
-  regions_url: https://ourairports.com/data/regions.csv
