@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -54,7 +52,6 @@ public class DataLoader {
             }
         }
     }
-
 
     public void loadAirports(InputStream input) throws Exception {
         try {
@@ -97,13 +94,11 @@ public class DataLoader {
                 boolean hasLatitude = false;
                 String latitude = record.get("latitude_deg");
                 if (latitude != null && latitude.length() > 0) {
-                    airport.setLatitude(BigDecimal.valueOf(Double.parseDouble(latitude)).setScale(5, RoundingMode.HALF_UP));
                     hasLatitude = true;
                 }
                 boolean hasLongitude = false;
                 String longitude = record.get("longitude_deg");
                 if (longitude != null && longitude.length() > 0) {
-                    airport.setLongitude(BigDecimal.valueOf(Double.parseDouble(longitude)).setScale(5, RoundingMode.HALF_UP));
                     hasLongitude = true;
                 }
                 if (hasLatitude && hasLongitude) {

@@ -1,11 +1,18 @@
 package com.example.aviationservice.domain;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -22,10 +29,7 @@ public class Airport implements Serializable {
     private String ident;
     private AirportType type;
     private String name;
-    @Column(precision = 5, scale = 2)
-    private BigDecimal latitude;
-    @Column(precision = 5, scale = 2)
-    private BigDecimal longitude;
+    @JsonSerialize(using = LocationToLatLngSerializer.class)
     private Geometry location;
     private Integer elevation;
     private String continent;
@@ -39,5 +43,16 @@ public class Airport implements Serializable {
     private String homeLink;
     private String wikipediaLink;
     private String keywords;
+
+    static class LocationToLatLngSerializer extends JsonSerializer<Geometry> {
+
+        @Override
+        public void serialize(Geometry value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeStartObject();
+            gen.writeNumberField("lat", value.getCoordinate().x);
+            gen.writeNumberField("lon", value.getCoordinate().y);
+            gen.writeEndObject();
+        }
+    }
 }
 

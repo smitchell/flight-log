@@ -158,8 +158,8 @@ public class TestLoadAirports {
         assertFalse(airport.isScheduledService());
         assertEquals("04FA", airport.getGpsCode());
 
-        assertEquals(BigDecimal.valueOf(25.558700561523400).setScale(5, RoundingMode.HALF_UP), airport.getLatitude());
-        assertEquals(BigDecimal.valueOf(-80.51509857177730).setScale(5, RoundingMode.HALF_UP), airport.getLongitude());
+        assertEquals(25.558700561523400D, airport.getLocation().getCoordinate().y);
+        assertEquals(-80.51509857177730D, airport.getLocation().getCoordinate().x);
         assertNotNull(airport.getLocation());
     }
 }
