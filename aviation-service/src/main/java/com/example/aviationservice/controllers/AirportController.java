@@ -97,19 +97,19 @@ public class AirportController {
         double maxLon = Double.MIN_VALUE;
         for (Airport airport : airportList) {
             Coordinate coord = airport.getLocation().getCoordinate();
-            double lat = coord.y;
-            double lon = coord.x;
-            if (minLat > lat) {
-                minLat = lat;
+            double lat = Math.abs(coord.y);
+            double lon = Math.abs(coord.x);
+            if (Math.abs(minLat) > lat) {
+                minLat = coord.y;
             }
-            if (maxLat < lat || (lat < 0 && maxLat > lat)) {
-                maxLat = lat;
+            if (Math.abs(maxLat) < lat) {
+                maxLat = coord.y;
             }
-            if (minLon > lon) {
-                minLon = lon;
+            if (Math.abs(minLon) > lon) {
+                minLon = coord.x;
             }
-            if (maxLon < lon || (lon < 0 && maxLon > lon )) {
-                maxLon = lon;
+            if (Math.abs(maxLon) < lon) {
+                maxLon = coord.x;
             }
         }
         return new Bounds(minLat, maxLat, minLon, maxLon);

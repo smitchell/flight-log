@@ -4,6 +4,7 @@ import { AirportService } from "../../service/airport.service";
 import {State} from "../../models/state";
 import {Airports} from "../../models/airports";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {Airport} from "../../models/airport";
 
 const iconRetinaUrl = 'assets/marker-icon.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -74,10 +75,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.map.flyToBounds(bounds);
       for (const airport of airports.data) {
         const marker = L.marker([airport.location.y, airport.location.x]);
+        marker.bindPopup(this.makeAirportPopup(airport));
         marker.addTo(this.layerGroup);
       }
     }
+  }
 
+  makeAirportPopup(airport: Airport): string {
+    return `` +
+      `<div>Airport: ${ airport.name }</div>` +
+      `<div>State: ${ airport.region }</div>` +
+      `<div>Type: ${ airport.type }</div>`
   }
 
   private handleError(error: Response, message: string) {

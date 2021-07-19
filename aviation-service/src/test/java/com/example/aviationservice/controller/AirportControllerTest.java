@@ -37,9 +37,9 @@ public class AirportControllerTest {
         }
         AirportController airportController = new AirportController(airportRepository);
         Bounds bounds = airportController.computeAirportsBounds(airports);
-        assertTrue(Double.valueOf(4d).equals(bounds.getMaxLat()));
-        assertTrue(Double.valueOf(1d).equals(bounds.getMinLat()));
-        assertTrue(Double.valueOf(-1d).equals(bounds.getMaxLon()));
-        assertTrue(Double.valueOf(-4d).equals(bounds.getMinLon()));
+        assertEquals(4d, bounds.getMaxLat(), 0.0);
+        assertEquals(1d, bounds.getMinLat(), 0.0);
+        assertEquals(-4d, bounds.getMaxLon(), 0.0);
+        assertEquals(-1d, bounds.getMinLon(), 0.0);
     }
 }
