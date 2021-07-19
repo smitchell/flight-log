@@ -85,7 +85,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return `` +
       `<div>Airport: ${ airport.name }</div>` +
       `<div>State: ${ airport.region }</div>` +
-      `<div>Type: ${ airport.type }</div>`
+      `<div>Type: ${ airport.type }</div>` +
+      `<div>Ident: ${ airport.ident }</div>`
   }
 
   private handleError(error: Response, message: string) {

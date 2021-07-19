@@ -70,7 +70,22 @@ public class DataLoader {
                 ignoredTypes.add(AirportType.closed);
                 ignoredTypes.add(AirportType.seaplane_base);
                 ignoredTypes.add(AirportType.heliport);
-                if (!"US".equals(countryCode) || ignoredTypes.contains(type)) {
+                List<String> ignoredIdents = new ArrayList<>();
+                // Bad coordinates or Region code
+                ignoredIdents.add("AL03");
+                ignoredIdents.add("US-0323");
+                ignoredIdents.add("9AR4");
+                ignoredIdents.add("US-1109");
+                ignoredIdents.add("03GA");
+                ignoredIdents.add("US-0926");
+                ignoredIdents.add("US-2328");
+                ignoredIdents.add("US-0151");
+                ignoredIdents.add("US-0998");
+                ignoredIdents.add("14VG");
+                ignoredIdents.add("US-4486");
+                ignoredIdents.add("US-3040");
+                String ident = record.get("ident");
+                if (!"US".equals(countryCode) || ignoredTypes.contains(type) || ignoredIdents.contains(ident)) {
                     continue;
                 }
                 int id = Integer.parseInt(record.get("id"));
@@ -78,7 +93,7 @@ public class DataLoader {
                 Airport airport = optionalAirport.orElseGet(Airport::new);
                 airport.setId(id);
                 airport.setType(type);
-                airport.setIdent(record.get("ident"));
+                airport.setIdent(ident);
                 airport.setLocalCode(record.get("local_code"));
                 airport.setName(record.get("name"));
                 airport.setContinent(record.get("continent"));
