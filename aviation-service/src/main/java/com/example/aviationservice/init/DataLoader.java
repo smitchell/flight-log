@@ -84,7 +84,6 @@ public class DataLoader {
                 airport.setContinent(record.get("continent"));
                 airport.setCountry(countryCode);
                 airport.setRegion(record.get("iso_region"));
-                String regionCode = record.get("iso_region");
                 airport.setGpsCode(record.get("gps_code"));
                 airport.setIataCode(record.get("iata_code"));
                 airport.setLocalCode(record.get("local_code"));

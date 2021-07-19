@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AirportController {
     private final List<State> states;
     private final List<AirportType> airportTypes;
@@ -85,26 +86,33 @@ public class AirportController {
         if (airportList.isEmpty()) {
             return new Airports(new Bounds(), airportList);
         }
-        double minLat = Double.MIN_VALUE;
-        double maxLat = Double.MAX_VALUE;
-        double minLon = Double.MIN_VALUE;
-        double maxLon = Double.MAX_VALUE;
+
+        return new Airports(computeAirportsBounds(airportList), airportList);
+    }
+
+    public Bounds computeAirportsBounds(List<Airport> airportList) {
+        double minLat = Double.MAX_VALUE;
+        double maxLat = Double.MIN_VALUE;
+        double minLon = Double.MAX_VALUE;
+        double maxLon = Double.MIN_VALUE;
         for (Airport airport : airportList) {
             Coordinate coord = airport.getLocation().getCoordinate();
-            if (minLat > coord.y) {
-                minLat = coord.y;
+            double lat = coord.y;
+            double lon = coord.x;
+            if (minLat > lat) {
+                minLat = lat;
             }
-            if (maxLat < coord.x) {
-                maxLat = coord.x;
+            if (maxLat < lat || (lat < 0 && maxLat > lat)) {
+                maxLat = lat;
             }
-            if (minLon > coord.y) {
-                minLon = coord.y;
+            if (minLon > lon) {
+                minLon = lon;
             }
-            if (maxLon < coord.x) {
-                maxLon = coord.x;
+            if (maxLon < lon || (lon < 0 && maxLon > lon )) {
+                maxLon = lon;
             }
         }
-        return new Airports(new Bounds(minLat, maxLat, minLon, minLon), airportList);
+        return new Bounds(minLat, maxLat, minLon, maxLon);
     }
 
 

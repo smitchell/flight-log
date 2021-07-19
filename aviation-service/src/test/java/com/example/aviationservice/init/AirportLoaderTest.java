@@ -12,8 +12,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest
 @Sql(scripts = "classpath:/schema-h2.sql")
-public class TestLoadAirports {
+public class AirportLoaderTest {
     @Autowired
     ResourceLoader resourceLoader;
 
@@ -37,7 +35,7 @@ public class TestLoadAirports {
     @Autowired
     private AirportRepository airportRepository;
 
-    public TestLoadAirports() throws ClassNotFoundException {
+    public AirportLoaderTest() throws ClassNotFoundException {
         Class.forName("org.h2gis.functions.factory.H2GISFunctions");
     }
 

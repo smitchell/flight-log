@@ -49,8 +49,8 @@ public class Airport implements Serializable {
         @Override
         public void serialize(Geometry value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
-            gen.writeNumberField("lat", value.getCoordinate().x);
-            gen.writeNumberField("lon", value.getCoordinate().y);
+            gen.writeNumberField("x", value.getCoordinate().x);
+            gen.writeNumberField("y", value.getCoordinate().y);
             gen.writeEndObject();
         }
     }

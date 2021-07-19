@@ -1,3 +1,13 @@
+<mat-card>
+  <mat-card-content>
+    <mat-form-field appearance="standard">
+      <mat-label>Select the airport state</mat-label>
+        <mat-select name="state" [(ngModel)]="state" (selectionChange)="onStateValueChange($event)">
+          <mat-option *ngFor="let state of states" [value]="state.code">{{state.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>
 <div class="map-container">
   <div class="map-frame">
     <div id="map">

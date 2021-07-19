@@ -92,7 +92,11 @@
 			<artifactId>h2gis</artifactId>
 			<version>${h2gis.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 

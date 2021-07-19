@@ -23,3 +23,28 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-card {
   width: 90%;
 }
+
+
+.style-error {
+  width: 100%;
+  margin: 2px;
+  text-align: center;
+  font-weight: bold;
+  color: red;
+  border: solid;
+  border-color: red;
+  border-width: 2px;
+  background: rgba(255, 0, 0, .1);
+}
+
+.style-success {
+  width: 100%;
+  margin: 2px;
+  text-align: center;
+  font-weight: bold;
+  color: green;
+  border: solid;
+  border-color: green;
+  border-width: 2px;
+  background: rgba(0, 255, 0, .1);
+}

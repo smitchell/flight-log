@@ -1,16 +1,37 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import * as L from 'leaflet';
+import {Airports} from "../models/airports";
+import {Observable} from "rxjs";
+import { map, filter } from 'rxjs/operators';
+import {RequestBuilder} from "./request-builder";
+import {StrictHttpResponse} from "./strict-http-response";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AirportService {
-  airports: string = '/assets/data/airports.json';
+  private baseUrl: string = 'http://localhost:8080'
+  private airports: string = '/assets/data/airports.json';
 
   constructor(private http: HttpClient) {
   }
+
+  public getAirportsByRegion(region: string): Observable<StrictHttpResponse<Airports>> {
+    const rb = new RequestBuilder(this.baseUrl, '/api/airports-by-region', 'get');
+    rb.query('region', region, {});
+
+    return this.http.request(rb.build({
+      responseType: 'json',
+      accept: 'application/json'
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Airports>;
+      })
+    );
+    }
 
   makeAirportMarkers(map: L.Map): void {
     console.log('makeAirportMarkers()');
@@ -29,25 +50,11 @@ export class AirportService {
     });
   }
 
+  getStandardHeaders(): HttpHeaders {
+    return new HttpHeaders()
+      .set('Content-Type', 'application/json;charset=UTF-8')
+      .set('LANGUAGE', "en-us");
+  }
+
 }
 
-interface Airport {
-  id: number;
-  ident: string;
-  type: string;
-  name: string;
-  latitude_deg: number;
-  longitude_deg: number;
-  elevation_ft: number;
-  continent: string;
-  iso_country: string;
-  iso_region: string;
-  municipality: string;
-  scheduled_service: string;
-  gps_code: string;
-  iata_code: string;
-  local_code: string;
-  home_link: string;
-  wikipedia_link: string;
-  keywords: string;
-}
